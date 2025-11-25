@@ -1,39 +1,60 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
 
 namespace FNAScreenSaver
 {
-    public class Game1 : Microsoft.Xna.Framework.Game
+    /// <summary>
+    /// основной класс
+    /// </summary>
+    public class Game : Microsoft.Xna.Framework.Game
     {
             GraphicsDeviceManager graphics;
             SpriteBatch spriteBatch;
-
-            Texture2D backgroundTexture;
-            Texture2D snowFlakeTexture;
+        /// <summary>
+        /// задний фон
+        /// </summary>
+           public Texture2D backgroundTexture;
+        /// <summary>
+        /// снежинка
+        /// </summary>
+           public Texture2D snowFlakeTexture;
 
             struct SnowFlake
             {
+           /// <summary>
+           /// позиция
+           /// </summary>
                 public Vector2 Position;
+           /// <summary>
+           /// скорость
+           /// </summary>
                 public float Speed;
+           /// <summary>
+           /// масштаб
+           /// </summary>
                 public float Scale;
             }
 
-            SnowFlake[] snowFlakes;
-            Random random = new Random();
+          SnowFlake[] snowFlakes;
+        /// <summary>
+        /// рандом
+        /// </summary>
+           public Random random = new Random();
 
             const int SnowCount = 1200; // можно менять 1000-1500
         const int sizeFlake = 50;
-
-            public Game1()
+        const float SnowDepthDivider = 50f; // задает "глубину" сцены
+        const float SnowParallaxMultiplier = 20f; // увеличивает видимое смещение при паденнии
+        const float SnowBaseSpeed = 30f; // базовая скорость падения для самого маленького медленного снежка
+        const float SnowSpeedScale = 100f; // множитель скорости, привязанный к размеру/глубине
+        const float SnowScaleMin = 0.3f; // минимальный масштаб снежинки
+        const float SnowScaleRange = 0.7f; // размах случайного добавления к минимальному масштабу
+        /// <summary>
+        /// конструктор класса по умолчанию
+        /// </summary>
+        public Game()
             {
                 graphics = new GraphicsDeviceManager(this);
                 Content.RootDirectory = "Content";
@@ -68,9 +89,9 @@ namespace FNAScreenSaver
                     );
 
                     // масштаб — случайный (маленькие "далеко", большие — "близко")
-                    snowFlakes[i].Scale = 0.3f + (float)random.NextDouble() * 0.7f;
+                    snowFlakes[i].Scale = SnowScaleMin + (float)random.NextDouble() * SnowScaleRange;
                     // скорость — зависит от масштаба
-                    snowFlakes[i].Speed = 30f + snowFlakes[i].Scale * 100f;
+                    snowFlakes[i].Speed = SnowBaseSpeed + snowFlakes[i].Scale * SnowSpeedScale;
                 }
             }
             protected override void Update(GameTime gameTime)
@@ -78,12 +99,12 @@ namespace FNAScreenSaver
                 // Завершение по нажатию клавиши
                 if (Keyboard.GetState().GetPressedKeys().Length > 0)
                     Exit();
-                float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
                 // Двигаем снежинки
                 for (int i = 0; i < SnowCount; i++)
                 {
                     snowFlakes[i].Position.Y += snowFlakes[i].Speed * delta;
-                    snowFlakes[i].Position.X += (float)Math.Sin(snowFlakes[i].Position.Y / 50f) * 20f * delta;
+                    snowFlakes[i].Position.X += (float)Math.Sin(snowFlakes[i].Position.Y / SnowDepthDivider) * SnowParallaxMultiplier * delta;
 
                     // Если снежинка вышла за экран — переносим вверх
                     if (snowFlakes[i].Position.Y > graphics.PreferredBackBufferHeight)

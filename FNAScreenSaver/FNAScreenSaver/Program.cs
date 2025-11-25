@@ -1,13 +1,15 @@
-﻿using FNAScreenSaver;
-namespace FNAScreenSaver;
-static class Program
+﻿namespace FNAScreenSaver;
+/// <summary>
+/// программный класс
+/// </summary>
+public static class Program
 {
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
-    static void Main()
+  public static void Main()
     {
-        using (var game = new Game1())
+        using (var game = new Game())
         {
             game.Run();
         }
