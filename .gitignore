@@ -416,4 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-!FNAScreenSaver/**/fnalibs/x64/*.dll
+# --- Allow required native libraries ---
+!FNAScreenSaver/FNAScreenSaver/FNAScreenSaver/fnalibs/x64/
+!FNAScreenSaver/FNAScreenSaver/FNAScreenSaver/fnalibs/x64/*.dll
